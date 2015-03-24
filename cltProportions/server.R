@@ -9,19 +9,28 @@ shinyServer(function(input, output) {
   #     when inputs change
   #  2) Its output type is a plot
   
-  manyTries <- reactive({
-    do(5000) * rflip(input$num, prob=input$true.p)
+  manyPHats <- reactive({
+    myfreq = round(10000*dbinom(0:input$num,input$num,input$true.p))
+    myres = c()
+    for (ii in 0:input$num) {
+      myres = c(myres, rep(ii/input$num, myfreq[ii+1]))
+    }
+    myres
   })
   output$distPlot <- renderPlot({
     binWidth = 1/input$num
-    histogram(~prop, data=manyTries(), width = binWidth, col = 'skyblue',
-              border = 'white', fit="normal")
+    histogram(~manyPHats(), width=binWidth,
+              col = 'skyblue', border = 'white', fit="normal",
+              xlab=expression(paste(hat(p), " values")),
+              main=expression(paste("Sampling distribution of ", hat(p))))
   })
   output$qqPlot <- renderPlot({
-    qqmath(~prop, data=manyTries())
+    qqmath(~manyPHats(), xlab="qnorm values", pch=19, cex=.4,
+           ylab=expression(paste(hat(p), " values")),
+           main="Quantile-quantile plot of sampling dist.")
   })
   output$text1 <- renderText({
-    approxStdErr <- round(sd(~prop,data=manyTries()), digits=4)
+    approxStdErr <- round(sd(manyPHats()), digits=4)
     paste("The bootstrapped approximate standard error is ",
           approxStdErr)
   })

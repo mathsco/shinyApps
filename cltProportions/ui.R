@@ -1,9 +1,10 @@
+require(shiny)
 shinyUI(fluidPage(
-  titlePanel("Sampling Distribution for p-hat"),
+  titlePanel(HTML("Sampling Distribution for p&#770")),
   sidebarLayout(
     sidebarPanel(numericInput("num", 
-                              label = h3("Sample size"), 
-                              value = 30),br(),
+                              label = h3("Sample size n"), 
+                              value = 5),br(),
                  sliderInput("true.p","True population proportion",
                              0.05,0.95,0.5,0.01)),
     mainPanel(
